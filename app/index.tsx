@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { copyText } from "@/utils/copy-clipboard";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import quotes from "../assets/templates/quotes.json";
 
 export default function App() {
@@ -17,6 +17,8 @@ export default function App() {
   const [quote, setQuote] = useState(() => fetchRandomQuote());
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
+  const copyRef = useRef<number | undefined>(undefined);
+
   function updateQuote() {
     setQuote(fetchRandomQuote());
   }
@@ -26,8 +28,18 @@ export default function App() {
 
     setIsCopied(true);
 
-    setTimeout(() => setIsCopied(false), 1500);
+    if (copyRef.current) {
+      clearTimeout(copyRef.current);
+    }
+
+    copyRef.current = setTimeout(() => setIsCopied(false), 1500);
   }
+
+  useEffect(() => {
+    if (copyRef.current) {
+      clearTimeout(copyRef.current);
+    }
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,23 +67,19 @@ export default function App() {
           <Pressable
             style={styles.actionItem}
             accessibilityLabel="copy"
+            accessibilityRole="button"
             onPress={() => handleCopy(`${quote.content} -- ${quote.author}`)}
           >
-            {isCopied ? (
-              <>
-                <View style={styles.actionIcon}>
-                  <MaterialIcons name="done-all" size={22} color="#fff" />
-                </View>
-                <Text style={styles.actionLabel}>Copied</Text>
-              </>
-            ) : (
-              <>
-                <View style={styles.actionIcon}>
-                  <MaterialIcons name="content-copy" size={22} color="#fff" />
-                </View>
-                <Text style={styles.actionLabel}>Copy</Text>
-              </>
-            )}
+            <View style={styles.actionIcon}>
+              <MaterialIcons
+                name={isCopied ? "done-all" : "content-copy"}
+                size={22}
+                color="#fff"
+              />
+            </View>
+            <Text style={styles.actionLabel}>
+              {isCopied ? "Copied" : "Copy"}
+            </Text>
           </Pressable>
 
           <Pressable
