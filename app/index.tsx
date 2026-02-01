@@ -1,17 +1,12 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { copyText } from "@/utils/copy-clipboard";
 import { useCallback, useState } from "react";
+import Toast from "react-native-root-toast";
 import quotes from "../assets/templates/quotes.json";
-const { width } = Dimensions.get("window");
 
 export default function App() {
   const fetchRandomQuote = useCallback(() => {
@@ -20,10 +15,19 @@ export default function App() {
     return quotes[randomIndex];
   }, []);
 
-  const [quote, setQuote] = useState(fetchRandomQuote());
+  const [quote, setQuote] = useState(() => fetchRandomQuote());
 
   function updateQuote() {
     setQuote(fetchRandomQuote());
+  }
+
+  function handleCopy(text: string) {
+    copyText(text);
+
+    Toast.show("Copied to clipboard", {
+      duration: Toast.durations.SHORT,
+      position: Toast.positions.BOTTOM,
+    });
   }
 
   return (
@@ -49,44 +53,31 @@ export default function App() {
 
         {/* Actions */}
         <View style={styles.actions}>
-          <ActionButton icon="favorite" label="Favorite" />
-          <ActionButton icon="share" label="Share" />
+          <Pressable
+            style={styles.actionItem}
+            accessibilityLabel="copy"
+            onPress={() => handleCopy(`${quote.content} -- ${quote.author}`)}
+          >
+            <View style={styles.actionIcon}>
+              <MaterialIcons name="content-copy" size={22} color="#fff" />
+            </View>
+            <Text style={styles.actionLabel}>Copy</Text>
+          </Pressable>
         </View>
       </View>
 
       {/* Bottom Button */}
       <View style={styles.footer}>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          style={styles.primaryButton}
-          onPress={updateQuote}
-        >
+        <Pressable style={styles.primaryButton} onPress={updateQuote}>
           <MaterialIcons name="autorenew" size={22} color="#fff" />
           <Text style={styles.primaryButtonText}>New Quote</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Decorative glows */}
       <View style={styles.glowTopRight} />
       <View style={styles.glowBottomLeft} />
     </SafeAreaView>
-  );
-}
-
-function ActionButton({
-  icon,
-  label,
-}: {
-  icon: keyof typeof MaterialIcons.glyphMap;
-  label: string;
-}) {
-  return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.actionItem}>
-      <View style={styles.actionIcon}>
-        <MaterialIcons name={icon} size={22} color="#fff" />
-      </View>
-      <Text style={styles.actionLabel}>{label}</Text>
-    </TouchableOpacity>
   );
 }
 
