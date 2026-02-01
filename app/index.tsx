@@ -9,9 +9,23 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useCallback, useState } from "react";
+import quotes from "../assets/templates/quotes.json";
 const { width } = Dimensions.get("window");
 
 export default function App() {
+  const fetchRandomQuote = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+
+    return quotes[randomIndex];
+  }, []);
+
+  const [quote, setQuote] = useState(fetchRandomQuote());
+
+  function updateQuote() {
+    setQuote(fetchRandomQuote());
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
@@ -29,10 +43,8 @@ export default function App() {
         <View style={styles.glowCenter} />
 
         <View style={styles.quoteContainer}>
-          <Text style={styles.quote}>
-            “The only way to do great work is to love what you do.”
-          </Text>
-          <Text style={styles.author}>— Steve Jobs</Text>
+          <Text style={styles.quote}>{`"${quote.content}"`}</Text>
+          <Text style={styles.author}>— {quote.author}</Text>
         </View>
 
         {/* Actions */}
@@ -44,7 +56,11 @@ export default function App() {
 
       {/* Bottom Button */}
       <View style={styles.footer}>
-        <TouchableOpacity activeOpacity={0.85} style={styles.primaryButton}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          style={styles.primaryButton}
+          onPress={updateQuote}
+        >
           <MaterialIcons name="autorenew" size={22} color="#fff" />
           <Text style={styles.primaryButtonText}>New Quote</Text>
         </TouchableOpacity>
@@ -54,16 +70,6 @@ export default function App() {
       <View style={styles.glowTopRight} />
       <View style={styles.glowBottomLeft} />
     </SafeAreaView>
-  );
-}
-
-/* ---------- Components ---------- */
-
-function IconButton({ icon }: { icon: keyof typeof MaterialIcons.glyphMap }) {
-  return (
-    <View style={styles.iconButton}>
-      <MaterialIcons name={icon} size={22} color="#fff" />
-    </View>
   );
 }
 
