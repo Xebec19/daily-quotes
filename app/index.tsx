@@ -5,7 +5,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { copyText } from "@/utils/copy-clipboard";
 import { useCallback, useState } from "react";
-import Toast from "react-native-root-toast";
 import quotes from "../assets/templates/quotes.json";
 
 export default function App() {
@@ -16,6 +15,7 @@ export default function App() {
   }, []);
 
   const [quote, setQuote] = useState(() => fetchRandomQuote());
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
   function updateQuote() {
     setQuote(fetchRandomQuote());
@@ -24,10 +24,9 @@ export default function App() {
   function handleCopy(text: string) {
     copyText(text);
 
-    Toast.show("Copied to clipboard", {
-      duration: Toast.durations.SHORT,
-      position: Toast.positions.BOTTOM,
-    });
+    setIsCopied(true);
+
+    setTimeout(() => setIsCopied(false), 1500);
   }
 
   return (
@@ -58,10 +57,21 @@ export default function App() {
             accessibilityLabel="copy"
             onPress={() => handleCopy(`${quote.content} -- ${quote.author}`)}
           >
-            <View style={styles.actionIcon}>
-              <MaterialIcons name="content-copy" size={22} color="#fff" />
-            </View>
-            <Text style={styles.actionLabel}>Copy</Text>
+            {isCopied ? (
+              <>
+                <View style={styles.actionIcon}>
+                  <MaterialIcons name="done-all" size={22} color="#fff" />
+                </View>
+                <Text style={styles.actionLabel}>Copied</Text>
+              </>
+            ) : (
+              <>
+                <View style={styles.actionIcon}>
+                  <MaterialIcons name="content-copy" size={22} color="#fff" />
+                </View>
+                <Text style={styles.actionLabel}>Copy</Text>
+              </>
+            )}
           </Pressable>
         </View>
       </View>
