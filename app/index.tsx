@@ -73,15 +73,18 @@ export default function App() {
               </>
             )}
           </Pressable>
-        </View>
-      </View>
 
-      {/* Bottom Button */}
-      <View style={styles.footer}>
-        <Pressable style={styles.primaryButton} onPress={updateQuote}>
-          <MaterialIcons name="autorenew" size={22} color="#fff" />
-          <Text style={styles.primaryButtonText}>New Quote</Text>
-        </Pressable>
+          <Pressable
+            style={styles.actionItem}
+            accessibilityLabel="copy"
+            onPress={() => updateQuote()}
+          >
+            <View style={styles.actionIcon}>
+              <MaterialIcons name="refresh" size={22} color="#fff" />
+            </View>
+            <Text style={styles.actionLabel}>Refresh</Text>
+          </Pressable>
+        </View>
       </View>
 
       {/* Decorative glows */}
