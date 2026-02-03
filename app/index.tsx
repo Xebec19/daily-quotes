@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
   },
   actionItem: {
     alignItems: "center",
+    zIndex: 99,
   },
   actionIcon: {
     backgroundColor: "rgba(255,255,255,0.06)",

@@ -20,7 +20,8 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "in.co.rohankumarthakur.dailyquotes",
-      "versionCode": 2,
+      "versionCode": 3,
+      "version": "2.0.0",
       "permissions": []
     },
     "web": {
