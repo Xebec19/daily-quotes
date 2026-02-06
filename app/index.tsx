@@ -1,13 +1,19 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { useFavorites } from "@/hooks/useFavorites";
+import type { Quote } from "@/types/quote";
 import { copyText } from "@/utils/copy-clipboard";
 import { useCallback, useEffect, useRef, useState } from "react";
 import quotes from "../assets/templates/quotes.json";
 
 export default function App() {
+  const { isFavorite, toggleFavorite } = useFavorites(quotes as Quote[]);
+
   const fetchRandomQuote = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
 
@@ -47,9 +53,17 @@ export default function App() {
 
       {/* Top Bar */}
       <View style={styles.header}>
-        {/* <IconButton icon="menu" /> */}
+        <View style={{ width: 40 }} />
         <Text style={styles.headerTitle}>Daily Quotes</Text>
-        {/* <IconButton icon="settings" /> */}
+        <Pressable
+          style={styles.iconButton}
+          accessibilityLabel="View favorites"
+          accessibilityRole="button"
+          accessibilityHint="Navigate to your favorite quotes"
+          onPress={() => router.push("/favorites")}
+        >
+          <MaterialIcons name="format-quote" size={24} color="#fff" />
+        </Pressable>
       </View>
 
       {/* Main Content */}
@@ -64,6 +78,11 @@ export default function App() {
 
         {/* Actions */}
         <View style={styles.actions}>
+          <FavoriteButton
+            isFavorite={isFavorite(quote._id)}
+            onToggle={() => toggleFavorite(quote)}
+          />
+
           <Pressable
             style={styles.actionItem}
             accessibilityLabel="copy"
@@ -135,6 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.06)",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 2,
   },
 
   /* Main */
